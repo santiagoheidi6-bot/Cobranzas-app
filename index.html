@@ -71,6 +71,7 @@ canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index
 .btn{display:block;width:100%;border:0;border-radius:16px;padding:14px;margin:8px 0;background:var(--rose);color:#fff;font:800 15px Nunito,sans-serif;text-align:center}.btn.g{background:var(--dg)}
 .pn textarea{width:100%;min-height:150px;padding:12px;border-radius:14px;border:2px solid var(--line);background:var(--card);color:var(--ink);font:600 13px Nunito,sans-serif}
 .hi{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:12px;margin:8px 0}.hi b{display:block}.hi>div{font-size:12px;color:var(--mut)}.hi ul{margin:8px 0 0;padding-left:18px;font-size:12px}
+.gh{font:800 15px Nunito,sans-serif;margin:16px 4px 8px;color:var(--mut)}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style></head><body>
 <header class="hero">
@@ -109,10 +110,13 @@ const DN={V:'Viernes 30',S:'Sábado 31'},COL=['#771126','#C55C6F','#EFB2BF','#E7
 let S={done:{},paid:{},note:{},when:{},fut:{},hist:[]},tab='T',open=null;
 try{S=Object.assign(S,JSON.parse(localStorage.getItem('cv')||'{}'))}catch(e){}
 S.when=S.when||{};S.fut=S.fut||{};S.hist=S.hist||[];let R=S.list||DEF;
-const vt=c=>{const t=S.when[c];if(!t)return'';const d=new Date(t),n=new Date(),hh=d.toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit',hour12:false});return d.toDateString()==n.toDateString()?'hoy '+hh:d.toLocaleDateString('es-PE',{day:'numeric',month:'short'})+' '+hh};
+const vt=c=>{const t=S.when[c];if(!t)return'';const d=new Date(t),n=new Date(),hh=d.toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit',hour12:false});return d.toDateString()==n.toDateString()?'hoy '+hh:d.toLocaleDateString('es-PE',{weekday:'short',day:'numeric',month:'short'})+' '+hh};
 const td=()=>new Date().toLocaleDateString('en-CA');
 const fd=f=>new Date(f+'T12:00').toLocaleDateString('es-PE',{weekday:'short',day:'numeric',month:'short'});
 const tt=r=>{const f=S.fut[r.c];if(!f||S.done[r.c])return'';const o=f<td();return`<em class="tent${o?' late':''}">${o?'⚠️ Reprogramar · era ':'📅 Tentativa: '}${fd(f)}</em>`};
+const li=t=>{if(!t)return'';const d=new Date(t),p=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes())};
+const srt=(a,b)=>{const x=!!S.done[a.c],y=!!S.done[b.c];if(x!=y)return y-x;if(x)return new Date(S.when[b.c]||0)-new Date(S.when[a.c]||0);return 0};
+const gh=(r,i,A)=>{const d=!!S.done[r.c];if(i&&d==!!S.done[A[i-1].c])return'';const n=A.filter(x=>!!S.done[x.c]==d).length;return`<h3 class="gh">${d?'✓ Visitadas':'Por visitar'} · ${n}</h3>`};
 const save=()=>{try{localStorage.setItem('cv',JSON.stringify(S))}catch(e){}};
 const $=i=>document.getElementById(i);let N=R.length;
 const m=n=>'S/ '+n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
@@ -134,10 +138,10 @@ function tabs(){
  const t=[['T','Todas',N,R.filter(r=>S.done[r.c]).length]].concat(days().map(k=>[k,k,R.filter(r=>r.d==k).length,R.filter(r=>r.d==k&&S.done[r.c]).length]));
  $('tabs').innerHTML=t.map(x=>`<button class="tab ${tab==x[0]?'on':''}" data-t="${x[0]}">${x[1]} · ${x[3]}/${x[2]}</button>`).join('')}
 function list(){
- $('list').innerHTML=R.filter(r=>tab=='T'||r.d==tab).map(r=>`<article class="c ${days().indexOf(r.d)%2?'s':''} ${S.done[r.c]?'done':''} ${open==r.c?'open':''}" data-c="${r.c}">
- <div class="row"><button class="chk" data-k="${r.c}" aria-label="Marcar visita">✓</button><div class="info" data-o="${r.c}"><b>${r.n}</b><span>${r.d} · Grupo ${r.g} · ${r.c}</span><em class="vis">✓ Visitada ${vt(r.c)}</em>${tt(r)}</div><span class="bal ${r.b?'':'z'}">${r.b?m(r.b):'Al día'}</span></div>
+ $('list').innerHTML=R.filter(r=>tab=='T'||r.d==tab).sort(srt).map((r,i,A)=>gh(r,i,A)+`<article class="c ${days().indexOf(r.d)%2?'s':''} ${S.done[r.c]?'done':''} ${open==r.c?'open':''}" data-c="${r.c}">
+ <div class="row"><button class="chk" data-k="${r.c}" aria-label="Marcar visita">✓</button><div class="info" data-o="${r.c}"><b>${r.n}</b><span>${S.done[r.c]?'':'Programada: '+r.d+' · '}Grupo ${r.g} · ${r.c}</span><em class="vis">✓ Visitada ${vt(r.c)}</em>${tt(r)}</div><span class="bal ${r.b?'':'z'}">${r.b?m(r.b):'Al día'}</span></div>
  <div class="det"><a target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.a+' Villa El Salvador Lima')}">📍 ${r.a}</a>
- <input type="number" inputmode="decimal" placeholder="Monto cobrado (S/)" data-p="${r.c}" value="${S.paid[r.c]||''}"><input type="text" placeholder="Notas" data-n="${r.c}" value="${(S.note[r.c]||'').replace(/"/g,'&quot;')}"><label class="lb">📅 Fecha tentativa de visita<input type="date" data-f="${r.c}" value="${S.fut[r.c]||''}"></label></div></article>`).join('')}
+ <input type="number" inputmode="decimal" placeholder="Monto cobrado (S/)" data-p="${r.c}" value="${S.paid[r.c]||''}"><input type="text" placeholder="Notas" data-n="${r.c}" value="${(S.note[r.c]||'').replace(/"/g,'&quot;')}"><label class="lb">📅 Fecha tentativa de visita<input type="date" data-f="${r.c}" value="${S.fut[r.c]||''}"></label>${S.done[r.c]?`<label class="lb">✅ Fecha y hora de visita (editable)<input type="datetime-local" data-w="${r.c}" value="${li(S.when[r.c])}"></label>`:''}</div></article>`).join('')}
 function toast(t){const e=$('toast');e.textContent=t;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),3200)}
 const cv=$('cv'),cx=cv.getContext('2d');let ps=[];
 function boom(n){cv.width=innerWidth;cv.height=innerHeight;
@@ -148,7 +152,7 @@ function boom(n){cv.width=innerWidth;cv.height=innerHeight;
 document.addEventListener('click',e=>{
  const k=e.target.closest('[data-k]'),o=e.target.closest('[data-o]'),t=e.target.closest('[data-t]');
  if(t){tab=t.dataset.t;tabs();list()}
- else if(k){const c=k.dataset.k;S.done[c]=!S.done[c];if(S.done[c])S.when[c]=new Date().toISOString();else delete S.when[c];save();list();stats(true);
+ else if(k){const c=k.dataset.k;S.done[c]=!S.done[c];if(S.done[c])S.when[c]=li(new Date());else delete S.when[c];save();list();stats(true);
   if(S.done[c]){const r=R.find(x=>x.c==c);const dd=R.filter(x=>x.d==r.d);
    if(R.every(x=>S.done[x.c])){boom(160);toast('🏆 ¡Terminaste toda la ruta!')}
    else if(dd.every(x=>S.done[x.c])){boom(120);toast('🎉 ¡Completaste el '+r.d+'!')}else boom(28)}}
@@ -177,6 +181,7 @@ document.addEventListener('click',e=>{
    if(!nr.length){toast('Revisa el formato: Día|Grupo|Nombre|Código|Dirección|Saldo');return}
    snap();S.list=nr;R=nr;S.done={};S.paid={};S.note={};S.when={};S.fut={};save();rebuild();shut();toast('✅ Nuevo listado cargado ('+nr.length+')')}}});
 document.addEventListener('change',e=>{const t=e.target;
+ if(t.dataset.w){if(t.value){S.when[t.dataset.w]=t.value;save();list();stats()}}
  if(t.dataset.f){if(t.value)S.fut[t.dataset.f]=t.value;else delete S.fut[t.dataset.f];save();list()}
  if(t.id=='imp'&&t.files[0]){const f=new FileReader();f.onload=()=>{try{const o=JSON.parse(f.result),s=o.S||o;if(!s.done)throw 0;S=Object.assign({done:{},paid:{},note:{},when:{},fut:{},hist:[]},s);R=S.list||DEF;save();rebuild();shut();toast('✅ Respaldo restaurado')}catch(x){toast('Ese archivo no es un respaldo válido')}};f.readAsText(t.files[0])}});
 list();stats();
