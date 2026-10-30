@@ -49,7 +49,7 @@ h1{margin:0;font-size:30px;font-weight:800;letter-spacing:-.5px}
 .chk{flex:none;width:44px;height:44px;border-radius:50%;border:3px solid var(--rose);background:transparent;color:transparent;font-size:22px;font-weight:800}
 .done .chk{background:var(--dg);border-color:var(--dg);color:#fff;animation:pop2 .4s}
 @keyframes pop2{50%{transform:scale(1.25)}}
-.info{flex:1;min-width:0;cursor:pointer}.info b{display:block;font-size:15px}.done .info b{text-decoration:line-through;color:var(--mut)}
+.info{flex:1;min-width:0;cursor:pointer}.info b{display:block;font-size:15px}.vis{display:none;font-style:normal;font-size:12px;font-weight:800;background:var(--dg);color:#fff;padding:3px 10px;border-radius:99px;margin-top:5px;white-space:nowrap}.done .vis{display:inline-block}
 .info span{font-size:12px;color:var(--mut)}
 .bal{flex:none;font:800 15px Fraunces,Georgia,serif;color:var(--berry);background:var(--vi);padding:6px 10px;border-radius:12px}
 .bal.z{color:var(--dg);background:var(--done)}
@@ -61,6 +61,16 @@ h1{margin:0;font-size:30px;font-weight:800;letter-spacing:-.5px}
 .toast.on{transform:translate(-50%,0)}
 canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:4}
 .rs{display:block;margin:22px auto 0;background:none;border:0;color:var(--mut);font:700 12px Nunito,sans-serif}
+
+.tent{display:inline-block;font-style:normal;font-size:12px;font-weight:800;background:var(--sa);color:var(--berry);padding:3px 10px;border-radius:99px;margin-top:5px;white-space:nowrap;border:1.5px dashed var(--rose)}.tent.late{background:var(--rose);color:#fff;border-color:var(--rose)}
+.lb{display:block;margin-top:10px;font-size:12px;color:var(--mut)}
+.acts{display:flex;gap:8px;margin-top:12px}.acts button{flex:1;border:2px solid var(--line);background:var(--card);color:var(--ink);font:800 12px Nunito,sans-serif;padding:10px 4px;border-radius:14px}
+.sh{position:fixed;inset:0;display:none;z-index:6}.sh.on{display:block}.bk{position:absolute;inset:0;background:rgba(40,8,14,.55)}
+.pn{position:absolute;left:0;right:0;bottom:0;max-height:86vh;overflow:auto;background:var(--bg);border-radius:26px 26px 0 0;padding:20px 16px calc(24px + env(safe-area-inset-bottom,0px));max-width:560px;margin:0 auto}
+.pn h2{font:800 22px Fraunces,Georgia,serif;margin:0 0 10px}.pn p{color:var(--mut);font-size:13px;margin:6px 0}
+.btn{display:block;width:100%;border:0;border-radius:16px;padding:14px;margin:8px 0;background:var(--rose);color:#fff;font:800 15px Nunito,sans-serif;text-align:center}.btn.g{background:var(--dg)}
+.pn textarea{width:100%;min-height:150px;padding:12px;border-radius:14px;border:2px solid var(--line);background:var(--card);color:var(--ink);font:600 13px Nunito,sans-serif}
+.hi{background:var(--card);border:2px solid var(--line);border-radius:16px;padding:12px;margin:8px 0}.hi b{display:block}.hi>div{font-size:12px;color:var(--mut)}.hi ul{margin:8px 0 0;padding-left:18px;font-size:12px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style></head><body>
 <header class="hero">
@@ -70,12 +80,14 @@ canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index
 </header>
 <main class="wrap">
 <section class="money"><div class="mr"><span>Recuperación de saldo</span><b id="rp"></b></div><div class="bar"><i id="rb"></i></div><div class="mr"><span>Saldo total <b id="tp"></b></span><span>Cobrado <b id="cb"></b></span></div></section>
+<div class="acts"><button data-s="h">📚 Historial</button><button data-s="b">💾 Respaldo</button><button data-s="l">📋 Nuevo listado</button></div>
 <div class="tabs" id="tabs"></div><div id="list"></div>
 <button class="rs" id="rs">Reiniciar todo</button>
 </main>
+<div class="sh" id="sh"><div class="bk" id="bk"></div><div class="pn" id="pn"></div></div>
 <div class="toast" id="toast"></div><canvas id="cv"></canvas>
 <script>
-const R=`V|10|Shirley Galvan Monroy|020297190|Cal. mz o lte 1 grupo 10 sector 1 VES|223.45
+const DEF=`V|10|Shirley Galvan Monroy|020297190|Cal. mz o lte 1 grupo 10 sector 1 VES|223.45
 V|10|Magali Estrada Huaman|052976456|Cal. avenida el sol mz. g lt. 22|0
 V|10|Rosita Ramos Lazaro|054840128|Cal. av el sol con av los alamos|0
 V|15|Johan Surco Avalos|051976592|Cal. ca sn mz p lte 16 sector 1 grupo 15 piso 2 VES|0
@@ -92,15 +104,20 @@ S|20|Elizabeth De La Cruz Salazar|052740886|Cal. villa el salvador mz. i lt. 22 
 S|25a|Madalet Paucar Rocano|051457633|Cal. mz i lte 12 sector 1 grupo 25a piso 3 interior a VES|0
 S|25a|Noelia Vicente Casio|031397081|Mlc. mz i lote 23 urb. villa el salvador sector 1 grupo 25a|0
 S|25|Victor Campos Idrogo|055179085|Cal. villa el salvador mz. j lt. 23 sector 1 grupo 25|112.65
-S|25a|Margarita Polack Sarmiento|031300304|Mz. i lte 6 grupo 25a sector primero VES|403.89`.split('\n').map(l=>{const p=l.split('|');return{d:p[0],g:p[1],n:p[2],c:p[3],a:p[4],b:+p[5]}});
+S|25a|Margarita Polack Sarmiento|031300304|Mz. i lte 6 grupo 25a sector primero VES|403.89`.split('\n').map(l=>{const p=l.split('|');return{d:({V:'Viernes 30',S:'Sábado 31'})[p[0]]||p[0],g:p[1],n:p[2],c:p[3],a:p[4],b:+p[5]}});
 const DN={V:'Viernes 30',S:'Sábado 31'},COL=['#771126','#C55C6F','#EFB2BF','#E7C6B6','#A5A89A','#7D8A7C'];
-let S={done:{},paid:{},note:{}},tab='T',open=null;
+let S={done:{},paid:{},note:{},when:{},fut:{},hist:[]},tab='T',open=null;
 try{S=Object.assign(S,JSON.parse(localStorage.getItem('cv')||'{}'))}catch(e){}
+S.when=S.when||{};S.fut=S.fut||{};S.hist=S.hist||[];let R=S.list||DEF;
+const vt=c=>{const t=S.when[c];if(!t)return'';const d=new Date(t),n=new Date(),hh=d.toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit',hour12:false});return d.toDateString()==n.toDateString()?'hoy '+hh:d.toLocaleDateString('es-PE',{day:'numeric',month:'short'})+' '+hh};
+const td=()=>new Date().toLocaleDateString('en-CA');
+const fd=f=>new Date(f+'T12:00').toLocaleDateString('es-PE',{weekday:'short',day:'numeric',month:'short'});
+const tt=r=>{const f=S.fut[r.c];if(!f||S.done[r.c])return'';const o=f<td();return`<em class="tent${o?' late':''}">${o?'⚠️ Reprogramar · era ':'📅 Tentativa: '}${fd(f)}</em>`};
 const save=()=>{try{localStorage.setItem('cv',JSON.stringify(S))}catch(e){}};
-const $=i=>document.getElementById(i),N=R.length;
+const $=i=>document.getElementById(i);let N=R.length;
 const m=n=>'S/ '+n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
 const fl=$('fl');
-fl.innerHTML=R.map((_,i)=>`<ellipse class="petal" id="p${i}" cx="100" cy="50" rx="12" ry="31" style="--r:rotate(${i*20}deg);transform:rotate(${i*20}deg)"/>`).join('')+'<circle cx="100" cy="100" r="38" fill="#F6F1E9"/><text class="pct" id="pc" x="100" y="107" text-anchor="middle"></text><text class="pcs" x="100" y="124" text-anchor="middle">de avance</text>';
+function flower(){N=R.length;const a=360/N,rx=Math.min(12,Math.max(4,210/N));fl.innerHTML=R.map((_,i)=>`<ellipse class="petal" id="p${i}" cx="100" cy="50" rx="${rx}" ry="31" style="--r:rotate(${i*a}deg);transform:rotate(${i*a}deg)"/>`).join('')+'<circle cx="100" cy="100" r="38" fill="#F6F1E9"/><text class="pct" id="pc" x="100" y="107" text-anchor="middle"></text><text class="pcs" x="100" y="124" text-anchor="middle">de avance</text>'}flower();
 function stats(pop){
  const dn=R.filter(r=>S.done[r.c]).length,pct=Math.round(dn/N*100);
  const tot=R.reduce((a,r)=>a+r.b,0),cob=R.reduce((a,r)=>a+(+S.paid[r.c]||0),0);
@@ -112,14 +129,15 @@ function stats(pop){
  $('rp').textContent=rp.toFixed(1)+'%';$('rb').style.width=rp+'%';
  $('msg').textContent=pct==0?'¡A florecer! Empieza tu ruta 💪':pct<50?'¡Buen ritmo, sigue así! 🔥':pct<100?'¡Ya casi lo logras! ✨':'¡Ruta completa, campeona! 🏆';
  tabs()}
+const days=()=>[...new Set(R.map(r=>r.d))];
 function tabs(){
- const t=[['T','Todas',N,R.filter(r=>S.done[r.c]).length]].concat(['V','S'].map(k=>[k,DN[k],R.filter(r=>r.d==k).length,R.filter(r=>r.d==k&&S.done[r.c]).length]));
+ const t=[['T','Todas',N,R.filter(r=>S.done[r.c]).length]].concat(days().map(k=>[k,k,R.filter(r=>r.d==k).length,R.filter(r=>r.d==k&&S.done[r.c]).length]));
  $('tabs').innerHTML=t.map(x=>`<button class="tab ${tab==x[0]?'on':''}" data-t="${x[0]}">${x[1]} · ${x[3]}/${x[2]}</button>`).join('')}
 function list(){
- $('list').innerHTML=R.filter(r=>tab=='T'||r.d==tab).map(r=>`<article class="c ${r.d=='S'?'s':''} ${S.done[r.c]?'done':''} ${open==r.c?'open':''}" data-c="${r.c}">
- <div class="row"><button class="chk" data-k="${r.c}" aria-label="Marcar visita">✓</button><div class="info" data-o="${r.c}"><b>${r.n}</b><span>${DN[r.d]} · Grupo ${r.g} · ${r.c}</span></div><span class="bal ${r.b?'':'z'}">${r.b?m(r.b):'Al día'}</span></div>
+ $('list').innerHTML=R.filter(r=>tab=='T'||r.d==tab).map(r=>`<article class="c ${days().indexOf(r.d)%2?'s':''} ${S.done[r.c]?'done':''} ${open==r.c?'open':''}" data-c="${r.c}">
+ <div class="row"><button class="chk" data-k="${r.c}" aria-label="Marcar visita">✓</button><div class="info" data-o="${r.c}"><b>${r.n}</b><span>${r.d} · Grupo ${r.g} · ${r.c}</span><em class="vis">✓ Visitada ${vt(r.c)}</em>${tt(r)}</div><span class="bal ${r.b?'':'z'}">${r.b?m(r.b):'Al día'}</span></div>
  <div class="det"><a target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.a+' Villa El Salvador Lima')}">📍 ${r.a}</a>
- <input type="number" inputmode="decimal" placeholder="Monto cobrado (S/)" data-p="${r.c}" value="${S.paid[r.c]||''}"><input type="text" placeholder="Notas" data-n="${r.c}" value="${(S.note[r.c]||'').replace(/"/g,'&quot;')}"></div></article>`).join('')}
+ <input type="number" inputmode="decimal" placeholder="Monto cobrado (S/)" data-p="${r.c}" value="${S.paid[r.c]||''}"><input type="text" placeholder="Notas" data-n="${r.c}" value="${(S.note[r.c]||'').replace(/"/g,'&quot;')}"><label class="lb">📅 Fecha tentativa de visita<input type="date" data-f="${r.c}" value="${S.fut[r.c]||''}"></label></div></article>`).join('')}
 function toast(t){const e=$('toast');e.textContent=t;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),3200)}
 const cv=$('cv'),cx=cv.getContext('2d');let ps=[];
 function boom(n){cv.width=innerWidth;cv.height=innerHeight;
@@ -130,15 +148,37 @@ function boom(n){cv.width=innerWidth;cv.height=innerHeight;
 document.addEventListener('click',e=>{
  const k=e.target.closest('[data-k]'),o=e.target.closest('[data-o]'),t=e.target.closest('[data-t]');
  if(t){tab=t.dataset.t;tabs();list()}
- else if(k){const c=k.dataset.k;S.done[c]=!S.done[c];save();list();stats(true);
+ else if(k){const c=k.dataset.k;S.done[c]=!S.done[c];if(S.done[c])S.when[c]=new Date().toISOString();else delete S.when[c];save();list();stats(true);
   if(S.done[c]){const r=R.find(x=>x.c==c);const dd=R.filter(x=>x.d==r.d);
    if(R.every(x=>S.done[x.c])){boom(160);toast('🏆 ¡Terminaste toda la ruta!')}
-   else if(dd.every(x=>S.done[x.c])){boom(120);toast('🎉 ¡Completaste el '+DN[r.d]+'!')}else boom(28)}}
+   else if(dd.every(x=>S.done[x.c])){boom(120);toast('🎉 ¡Completaste el '+r.d+'!')}else boom(28)}}
  else if(o){open=open==o.dataset.o?null:o.dataset.o;document.querySelectorAll('.c').forEach(a=>a.classList.toggle('open',a.dataset.c==open))}});
 document.addEventListener('input',e=>{const t=e.target;
  if(t.dataset.p){S.paid[t.dataset.p]=t.value;save();stats()}
  if(t.dataset.n){S.note[t.dataset.n]=t.value;save()}});
-let rt=0;$('rs').onclick=()=>{if(rt){S={done:{},paid:{},note:{}};save();rt=0;$('rs').textContent='Reiniciar todo';list();stats()}else{rt=1;$('rs').textContent='Toca otra vez para borrar todo';setTimeout(()=>{rt=0;$('rs').textContent='Reiniciar todo'},3000)}};
+let rt=0;$('rs').onclick=()=>{if(rt){snap();S={done:{},paid:{},note:{},when:{},fut:{},hist:S.hist,list:S.list};save();rt=0;$('rs').textContent='Reiniciar todo';list();stats()}else{rt=1;$('rs').textContent='Toca otra vez para borrar todo';setTimeout(()=>{rt=0;$('rs').textContent='Reiniciar todo'},3000)}};
+
+const shut=()=>$('sh').classList.remove('on');
+function snap(){const dn=R.filter(r=>S.done[r.c]).length,n=new Date();S.hist.push({t:n.toLocaleDateString('es-PE',{weekday:'long',day:'numeric',month:'long'})+' '+n.toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit',hour12:false}),v:dn,n:N,c:R.reduce((a,r)=>a+(+S.paid[r.c]||0),0),i:R.map(r=>({n:r.n,d:!!S.done[r.c],p:S.paid[r.c]||'',w:vt(r.c),f:S.fut[r.c]||'',o:S.note[r.c]||''}))});save()}
+function sheet(k){let h='';
+ if(k=='h')h='<h2>📚 Historial</h2><button class="btn g" data-a="snap">Guardar historial de hoy</button><p>Guarda una copia de la ruta actual: visitas, cobros, notas y fechas. Todo sigue en pantalla.</p>'+(S.hist.length?S.hist.slice().reverse().map(x=>`<div class="hi"><b>${x.t}</b><div>${x.v}/${x.n} visitadas · ${m(x.c)} cobrado</div><ul>${x.i.map(y=>`<li>${y.d?'✓':'○'} ${y.n}${y.p?' · '+m(+y.p):''}${y.w?' · '+y.w:''}${y.f&&!y.d?' · tentativa '+fd(y.f):''}${y.o?' · '+y.o:''}</li>`).join('')}</ul></div>`).join(''):'<p>Aún no hay historial guardado.</p>');
+ if(k=='b')h='<h2>💾 Respaldo</h2><button class="btn" data-a="exp">Descargar respaldo</button><p>Archivo con todo: visitas, cobros, notas, fechas tentativas, historial y tu listado.</p><label class="btn g">Restaurar respaldo<input type="file" accept=".json,application/json" id="imp" hidden></label>';
+ if(k=='l')h='<h2>📋 Nuevo listado</h2><p>Una consultora por línea:<br><b>Día|Grupo|Nombre|Código|Dirección|Saldo</b></p><textarea id="nl" placeholder="Viernes 6|Grupo 10|Ana Pérez|012345678|Av. Sol mz A lt 3|120.50"></textarea><button class="btn" data-a="nl">Guardar historial y cargar listado</button><p>Antes de cambiar, se guarda el historial de la ruta actual. No se pierde nada.</p>';
+ $('pn').innerHTML=h;$('sh').classList.add('on')}
+function rebuild(){tab='T';open=null;flower();list();stats()}
+document.addEventListener('click',e=>{
+ const s=e.target.closest('[data-s]'),a=e.target.closest('[data-a]');
+ if(e.target.id=='bk')shut();
+ if(s)sheet(s.dataset.s);
+ if(a){const k=a.dataset.a;
+  if(k=='snap'){snap();sheet('h');toast('📚 Historial guardado')}
+  if(k=='exp'){const l=document.createElement('a');l.href=URL.createObjectURL(new Blob([JSON.stringify({app:'cobranzas',S})],{type:'application/json'}));l.download='respaldo-cobranzas-'+td()+'.json';document.body.appendChild(l);l.click();l.remove();toast('💾 Respaldo descargado')}
+  if(k=='nl'){const nr=$('nl').value.split('\n').map(x=>x.trim()).filter(Boolean).map(x=>x.split('|')).filter(p=>p.length>=6).map(p=>({d:p[0].trim(),g:p[1].replace(/grupo\s*/i,'').trim(),n:p[2].trim(),c:p[3].trim(),a:p[4].trim(),b:parseFloat(p[5])||0}));
+   if(!nr.length){toast('Revisa el formato: Día|Grupo|Nombre|Código|Dirección|Saldo');return}
+   snap();S.list=nr;R=nr;S.done={};S.paid={};S.note={};S.when={};S.fut={};save();rebuild();shut();toast('✅ Nuevo listado cargado ('+nr.length+')')}}});
+document.addEventListener('change',e=>{const t=e.target;
+ if(t.dataset.f){if(t.value)S.fut[t.dataset.f]=t.value;else delete S.fut[t.dataset.f];save();list()}
+ if(t.id=='imp'&&t.files[0]){const f=new FileReader();f.onload=()=>{try{const o=JSON.parse(f.result),s=o.S||o;if(!s.done)throw 0;S=Object.assign({done:{},paid:{},note:{},when:{},fut:{},hist:[]},s);R=S.list||DEF;save();rebuild();shut();toast('✅ Respaldo restaurado')}catch(x){toast('Ese archivo no es un respaldo válido')}};f.readAsText(t.files[0])}});
 list();stats();
 if('serviceWorker' in navigator)addEventListener('load',()=>{try{navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}});
 </script></body></html>
