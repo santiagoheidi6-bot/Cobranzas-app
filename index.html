@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ruta de Cobranzas</title>
+<meta name="theme-color" content="#771126">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Cobranzas">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F6F1E9;--card:#fff;--ink:#501012;--mut:#7D8A7C;--line:#E7C6B6;--berry:#771126;--burg:#501012;--rose:#C55C6F;--blush:#EFB2BF;--peach:#E7C6B6;--sage:#A5A89A;--dg:#7D8A7C;--vi:#FBE3E8;--sa:#F6E4DA;--done:#E4E7DF;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#26090e;--card:#3a1119;--ink:#F6F1E9;--mut:#A5A89A;--line:#5e2a35;--vi:#4a1a25;--sa:#432019;--done:#2f3a33}}
+:root[data-theme="dark"]{--bg:#26090e;--card:#3a1119;--ink:#F6F1E9;--mut:#A5A89A;--line:#5e2a35;--vi:#4a1a25;--sa:#432019;--done:#2f3a33}
+*{box-sizing:border-box}html{background:var(--bg)}
+body{margin:0;background:var(--bg);color:var(--ink);font:600 15px/1.4 Nunito,system-ui,sans-serif;max-width:560px;margin-inline:auto;padding-bottom:40px}
+h1,.big{font-family:Fraunces,Georgia,serif}
+.hero{background:linear-gradient(160deg,var(--berry),var(--burg) 70%);color:#F6F1E9;padding:22px 20px 26px;border-radius:0 0 34px 34px;position:relative;overflow:hidden}
+.hero:before,.hero:after{content:"";position:absolute;border-radius:50%;background:var(--rose);opacity:.25}
+.hero:before{width:180px;height:180px;right:-60px;top:-50px}.hero:after{width:110px;height:110px;left:-40px;bottom:30px;background:var(--blush);opacity:.15}
+.hero>*{position:relative;z-index:1}
+h1{margin:0;font-size:30px;font-weight:800;letter-spacing:-.5px}
+.msg{margin:4px 0 0;color:var(--blush);font-weight:700}
+.flower{display:block;width:min(78vw,300px);margin:6px auto 0}
+.petal{fill:none;stroke:rgba(239,178,191,.45);stroke-width:1.6;transform-box:view-box;transform-origin:100px 100px;transition:fill .45s,stroke .45s}
+.petal.on{stroke:none}.petal.pop{animation:pop .6s cubic-bezier(.3,1.6,.5,1)}
+@keyframes pop{0%{transform:var(--r) scale(.4)}100%{transform:var(--r) scale(1)}}
+.pct{font:800 40px Fraunces,Georgia,serif;fill:var(--burg)}.pcs{font:700 11px Nunito,sans-serif;fill:var(--dg)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:6px}
+.st{background:rgba(246,241,233,.14);border-radius:16px;padding:10px 6px;text-align:center}
+.st b{display:block;font:800 18px Fraunces,Georgia,serif}.st span{font-size:12px;color:var(--peach)}
+.wrap{padding:0 16px}
+.money{margin:18px 0 6px;background:var(--card);border:2px solid var(--line);border-radius:20px;padding:14px}
+.bar{height:16px;border-radius:99px;background:var(--vi);overflow:hidden;margin:8px 0}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--dg),var(--sage));border-radius:99px;transition:width .6s}
+.mr{display:flex;justify-content:space-between;font-size:13px;color:var(--mut)}.mr b{color:var(--ink)}
+.tabs{display:flex;gap:8px;margin:16px 0 10px;overflow-x:auto}
+.tab{flex:1;white-space:nowrap;border:2px solid var(--line);background:var(--card);color:var(--ink);font:800 14px Nunito,sans-serif;padding:10px 12px;border-radius:99px}
+.tab.on{background:var(--rose);border-color:var(--rose);color:#fff}
+.c{background:var(--card);border-radius:20px;margin-bottom:10px;border:2px solid var(--line);border-left:8px solid var(--rose);overflow:hidden;transition:background .3s}
+.c.s{border-left-color:var(--dg)}
+.c.done{background:var(--done);border-color:var(--sage);border-left-color:var(--dg)}
+.row{display:flex;align-items:center;gap:12px;padding:12px}
+.chk{flex:none;width:44px;height:44px;border-radius:50%;border:3px solid var(--rose);background:transparent;color:transparent;font-size:22px;font-weight:800}
+.done .chk{background:var(--dg);border-color:var(--dg);color:#fff;animation:pop2 .4s}
+@keyframes pop2{50%{transform:scale(1.25)}}
+.info{flex:1;min-width:0;cursor:pointer}.info b{display:block;font-size:15px}.done .info b{text-decoration:line-through;color:var(--mut)}
+.info span{font-size:12px;color:var(--mut)}
+.bal{flex:none;font:800 15px Fraunces,Georgia,serif;color:var(--berry);background:var(--vi);padding:6px 10px;border-radius:12px}
+.bal.z{color:var(--dg);background:var(--done)}
+.det{display:none;padding:0 12px 14px;border-top:2px dashed var(--line)}
+.c.open .det{display:block}
+.det a{display:block;margin:10px 0;color:var(--rose);font-weight:800;text-decoration:none;font-size:13px}
+.det input{width:100%;margin-top:6px;padding:12px;border-radius:14px;border:2px solid var(--line);background:var(--bg);color:var(--ink);font:700 15px Nunito,sans-serif}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,120px);background:var(--berry);color:#fff;padding:14px 20px;border-radius:99px;font-weight:800;transition:transform .5s cubic-bezier(.3,1.5,.5,1);z-index:5;max-width:90vw;text-align:center}
+.toast.on{transform:translate(-50%,0)}
+canvas{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:4}
+.rs{display:block;margin:22px auto 0;background:none;border:0;color:var(--mut);font:700 12px Nunito,sans-serif}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style></head><body>
+<header class="hero">
+<h1>Ruta de Cobranzas 🌸</h1><p class="msg" id="msg"></p>
+<svg class="flower" viewBox="0 0 200 200" id="fl" role="img" aria-label="Progreso de visitas"></svg>
+<div class="stats"><div class="st"><b id="s1"></b><span>visitadas</span></div><div class="st"><b id="s2"></b><span>cobrado</span></div><div class="st"><b id="s3"></b><span>por cobrar</span></div></div>
+</header>
+<main class="wrap">
+<section class="money"><div class="mr"><span>Recuperación de saldo</span><b id="rp"></b></div><div class="bar"><i id="rb"></i></div><div class="mr"><span>Saldo total <b id="tp"></b></span><span>Cobrado <b id="cb"></b></span></div></section>
+<div class="tabs" id="tabs"></div><div id="list"></div>
+<button class="rs" id="rs">Reiniciar todo</button>
+</main>
+<div class="toast" id="toast"></div><canvas id="cv"></canvas>
+<script>
+const R=`V|10|Shirley Galvan Monroy|020297190|Cal. mz o lte 1 grupo 10 sector 1 VES|223.45
+V|10|Magali Estrada Huaman|052976456|Cal. avenida el sol mz. g lt. 22|0
+V|10|Rosita Ramos Lazaro|054840128|Cal. av el sol con av los alamos|0
+V|15|Johan Surco Avalos|051976592|Cal. ca sn mz p lte 16 sector 1 grupo 15 piso 2 VES|0
+V|15|Judith Vasquez Capristan|055285349|Cal. villa el salvador mz. l lt. 22 sector 1 grupo 15|104.34
+V|15|Yahaira Paredes Rodriguez|043434624|Mlc. mz n lote 3 p.j villa el salvador sector 1 grupo 15|213.43
+V|20|Alexandra Loayza Zegarra|054945248|Cal. villa el salvador mz. h lt. 09 sector 1 grupo 20|0
+V|20|Diana Sanchez Segundo|032542840|Cal. ca sn mz m lte 11 sector 1 grupo 20 piso 2 VES|0
+V|20|Merly Olivares Olivares|035057420|Mlc. mz c lote 17 p.j villa el salvador sector 1 grupo 20|100.20
+V|20|Hilary Castro Velez|045740676|Cal. sector 1 grupo 20 mz i lte 4|114.36
+V|20|Eralio Ortega Huaranga|039274655|Cal. mz e lte 11 grupo 20 sector 1 VES|557.51
+S|20|Natalia Bautista Apaza|001167146|Av. avenida mariano pastor sevilla mz m lote 14 urb. VES|0
+S|20|Ruth Gonzales Saire|011758150|Sector 1 grupo 20 mz. h lt. 15 1er piso|0
+S|20|Elizabeth De La Cruz Salazar|052740886|Cal. villa el salvador mz. i lt. 22 sector 1 grupo 20|523.95
+S|25a|Madalet Paucar Rocano|051457633|Cal. mz i lte 12 sector 1 grupo 25a piso 3 interior a VES|0
+S|25a|Noelia Vicente Casio|031397081|Mlc. mz i lote 23 urb. villa el salvador sector 1 grupo 25a|0
+S|25|Victor Campos Idrogo|055179085|Cal. villa el salvador mz. j lt. 23 sector 1 grupo 25|112.65
+S|25a|Margarita Polack Sarmiento|031300304|Mz. i lte 6 grupo 25a sector primero VES|403.89`.split('\n').map(l=>{const p=l.split('|');return{d:p[0],g:p[1],n:p[2],c:p[3],a:p[4],b:+p[5]}});
+const DN={V:'Viernes 30',S:'Sábado 31'},COL=['#771126','#C55C6F','#EFB2BF','#E7C6B6','#A5A89A','#7D8A7C'];
+let S={done:{},paid:{},note:{}},tab='T',open=null;
+try{S=Object.assign(S,JSON.parse(localStorage.getItem('cv')||'{}'))}catch(e){}
+const save=()=>{try{localStorage.setItem('cv',JSON.stringify(S))}catch(e){}};
+const $=i=>document.getElementById(i),N=R.length;
+const m=n=>'S/ '+n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g,',');
+const fl=$('fl');
+fl.innerHTML=R.map((_,i)=>`<ellipse class="petal" id="p${i}" cx="100" cy="50" rx="12" ry="31" style="--r:rotate(${i*20}deg);transform:rotate(${i*20}deg)"/>`).join('')+'<circle cx="100" cy="100" r="38" fill="#F6F1E9"/><text class="pct" id="pc" x="100" y="107" text-anchor="middle"></text><text class="pcs" x="100" y="124" text-anchor="middle">de avance</text>';
+function stats(pop){
+ const dn=R.filter(r=>S.done[r.c]).length,pct=Math.round(dn/N*100);
+ const tot=R.reduce((a,r)=>a+r.b,0),cob=R.reduce((a,r)=>a+(+S.paid[r.c]||0),0);
+ R.forEach((r,i)=>{const p=$('p'+i),on=!!S.done[r.c];const was=p.classList.contains('on');
+  p.classList.toggle('on',on);p.style.fill=on?COL[i%COL.length]:'none';
+  if(on&&!was&&pop){p.classList.remove('pop');void p.getBBox();p.classList.add('pop')}});
+ $('pc').textContent=pct+'%';$('s1').textContent=dn+'/'+N;$('s2').textContent=m(cob);$('s3').textContent=m(Math.max(0,tot-cob));
+ $('tp').textContent=m(tot);$('cb').textContent=m(cob);const rp=tot?Math.min(100,cob/tot*100):0;
+ $('rp').textContent=rp.toFixed(1)+'%';$('rb').style.width=rp+'%';
+ $('msg').textContent=pct==0?'¡A florecer! Empieza tu ruta 💪':pct<50?'¡Buen ritmo, sigue así! 🔥':pct<100?'¡Ya casi lo logras! ✨':'¡Ruta completa, campeona! 🏆';
+ tabs()}
+function tabs(){
+ const t=[['T','Todas',N,R.filter(r=>S.done[r.c]).length]].concat(['V','S'].map(k=>[k,DN[k],R.filter(r=>r.d==k).length,R.filter(r=>r.d==k&&S.done[r.c]).length]));
+ $('tabs').innerHTML=t.map(x=>`<button class="tab ${tab==x[0]?'on':''}" data-t="${x[0]}">${x[1]} · ${x[3]}/${x[2]}</button>`).join('')}
+function list(){
+ $('list').innerHTML=R.filter(r=>tab=='T'||r.d==tab).map(r=>`<article class="c ${r.d=='S'?'s':''} ${S.done[r.c]?'done':''} ${open==r.c?'open':''}" data-c="${r.c}">
+ <div class="row"><button class="chk" data-k="${r.c}" aria-label="Marcar visita">✓</button><div class="info" data-o="${r.c}"><b>${r.n}</b><span>${DN[r.d]} · Grupo ${r.g} · ${r.c}</span></div><span class="bal ${r.b?'':'z'}">${r.b?m(r.b):'Al día'}</span></div>
+ <div class="det"><a target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.a+' Villa El Salvador Lima')}">📍 ${r.a}</a>
+ <input type="number" inputmode="decimal" placeholder="Monto cobrado (S/)" data-p="${r.c}" value="${S.paid[r.c]||''}"><input type="text" placeholder="Notas" data-n="${r.c}" value="${(S.note[r.c]||'').replace(/"/g,'&quot;')}"></div></article>`).join('')}
+function toast(t){const e=$('toast');e.textContent=t;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),3200)}
+const cv=$('cv'),cx=cv.getContext('2d');let ps=[];
+function boom(n){cv.width=innerWidth;cv.height=innerHeight;
+ for(let i=0;i<n;i++)ps.push({x:innerWidth/2,y:innerHeight*.45,vx:(Math.random()-.5)*14,vy:-Math.random()*14-3,s:Math.random()*8+4,c:COL[i%COL.length],r:Math.random()*6,l:110});
+ if(ps.length==n)(function f(){cx.clearRect(0,0,cv.width,cv.height);ps=ps.filter(p=>p.l-->0);
+  ps.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.35;p.r+=.2;cx.save();cx.translate(p.x,p.y);cx.rotate(p.r);cx.fillStyle=p.c;cx.globalAlpha=Math.min(1,p.l/30);cx.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);cx.restore()});
+  if(ps.length)requestAnimationFrame(f);else cx.clearRect(0,0,cv.width,cv.height)})()}
+document.addEventListener('click',e=>{
+ const k=e.target.closest('[data-k]'),o=e.target.closest('[data-o]'),t=e.target.closest('[data-t]');
+ if(t){tab=t.dataset.t;tabs();list()}
+ else if(k){const c=k.dataset.k;S.done[c]=!S.done[c];save();list();stats(true);
+  if(S.done[c]){const r=R.find(x=>x.c==c);const dd=R.filter(x=>x.d==r.d);
+   if(R.every(x=>S.done[x.c])){boom(160);toast('🏆 ¡Terminaste toda la ruta!')}
+   else if(dd.every(x=>S.done[x.c])){boom(120);toast('🎉 ¡Completaste el '+DN[r.d]+'!')}else boom(28)}}
+ else if(o){open=open==o.dataset.o?null:o.dataset.o;document.querySelectorAll('.c').forEach(a=>a.classList.toggle('open',a.dataset.c==open))}});
+document.addEventListener('input',e=>{const t=e.target;
+ if(t.dataset.p){S.paid[t.dataset.p]=t.value;save();stats()}
+ if(t.dataset.n){S.note[t.dataset.n]=t.value;save()}});
+let rt=0;$('rs').onclick=()=>{if(rt){S={done:{},paid:{},note:{}};save();rt=0;$('rs').textContent='Reiniciar todo';list();stats()}else{rt=1;$('rs').textContent='Toca otra vez para borrar todo';setTimeout(()=>{rt=0;$('rs').textContent='Reiniciar todo'},3000)}};
+list();stats();
+if('serviceWorker' in navigator)addEventListener('load',()=>{try{navigator.serviceWorker.register('sw.js').catch(()=>{})}catch(e){}});
+</script></body></html>
